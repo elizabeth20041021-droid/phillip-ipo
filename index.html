@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>過聆訊後新股推薦｜三家聚焦</title>
+<style>
+  :root {
+    --navy: #0f2744;
+    --gold: #d69e2e;
+    --green: #276749;
+    --blue: #2b6cb0;
+    --gray: #4a5568;
+    --bg: #f7fafc;
+    --card: #ffffff;
+    --border: #e2e8f0;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "Microsoft YaHei", "PingFang TC", "Noto Sans TC", sans-serif;
+    background: var(--bg);
+    color: #1a202c;
+    line-height: 1.55;
+    font-size: 15px;
+  }
+  .topbar {
+    background: var(--navy);
+    color: #fff;
+    padding: 14px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .topbar .brand { font-weight: 700; font-size: 16px; }
+  .topbar .meta { font-size: 12px; opacity: 0.75; }
+  .wrap { max-width: 900px; margin: 0 auto; padding: 24px 16px 60px; }
+
+  .hero {
+    background: linear-gradient(135deg, #0f2744 0%, #1a365d 100%);
+    color: #fff;
+    border-radius: 16px;
+    padding: 28px 24px;
+    margin-bottom: 20px;
+  }
+  .hero h1 { font-size: 24px; margin-bottom: 6px; }
+  .hero .sub { opacity: 0.8; font-size: 13px; margin-bottom: 18px; }
+  .hero-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+  @media (max-width: 700px) {
+    .hero-cards { grid-template-columns: 1fr; }
+  }
+  .hero-card {
+    background: rgba(255,255,255,0.1);
+    border-radius: 12px;
+    padding: 16px;
+    border: 1px solid rgba(255,255,255,0.15);
+    cursor: pointer;
+    transition: background 0.2s, transform 0.15s;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+  }
+  .hero-card:hover {
+    background: rgba(255,255,255,0.18);
+    transform: translateY(-2px);
+  }
+  .hero-card .stars { color: var(--gold); font-size: 17px; letter-spacing: 1px; }
+  .hero-card .name { font-weight: 700; font-size: 16px; margin: 6px 0 4px; }
+  .hero-card .tag { font-size: 12px; opacity: 0.85; }
+  .hero-card .fund { margin-top: 10px; font-size: 13px; }
+  .hero-card .fund b { color: #fbd38d; }
+  .hero-card .hint { font-size: 11px; opacity: 0.6; margin-top: 8px; }
+
+  .section {
+    background: var(--card);
+    border-radius: 16px;
+    padding: 24px 22px;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    border: 1px solid var(--border);
+  }
+  .section h2 {
+    font-size: 18px;
+    color: var(--navy);
+    border-left: 4px solid var(--gold);
+    padding-left: 12px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .section .one-liner {
+    color: var(--gray);
+    font-size: 13px;
+    margin-bottom: 10px;
+    padding-left: 16px;
+  }
+  .section h3 {
+    font-size: 14px;
+    color: var(--navy);
+    margin: 16px 0 8px;
+    font-weight: 700;
+  }
+  .badge {
+    display: inline-block;
+    background: #edf2f7;
+    color: var(--navy);
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+  }
+  .badge.green { background: #c6f6d5; color: #276749; }
+  .badge.blue { background: #bee3f8; color: #2b6cb0; }
+
+  .kpi-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin: 12px 0 16px;
+  }
+  @media (max-width: 700px) {
+    .kpi-row { grid-template-columns: repeat(2, 1fr); }
+  }
+  .kpi {
+    background: #f7fafc;
+    border-radius: 10px;
+    padding: 12px 10px;
+    text-align: left;
+    border: 1px solid var(--border);
+  }
+  .kpi .label { font-size: 11px; color: var(--gray); }
+  .kpi .val { font-size: 15px; font-weight: 700; color: var(--navy); margin-top: 4px; }
+  .kpi .val.up { color: var(--green); }
+
+  ul.clean { list-style: none; padding: 0; }
+  ul.clean li {
+    padding: 5px 0 5px 16px;
+    position: relative;
+    font-size: 13.5px;
+    text-align: left;
+  }
+  ul.clean li::before {
+    content: "•";
+    position: absolute;
+    left: 2px;
+    color: var(--gold);
+    font-weight: 700;
+  }
+  ul.clean li b { color: var(--navy); }
+
+  .peer-box {
+    background: #f0fff4;
+    border: 1px solid #9ae6b4;
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-top: 14px;
+    text-align: left;
+  }
+  .peer-box.blue { background: #ebf8ff; border-color: #90cdf4; }
+  .peer-box h4 {
+    font-size: 13.5px;
+    margin-bottom: 6px;
+    color: var(--navy);
+    text-align: left;
+  }
+  .peer-box > p {
+    font-size: 12.5px;
+    color: var(--gray);
+    margin-bottom: 10px;
+    text-align: left;
+  }
+  .peer-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12.5px;
+    margin-top: 4px;
+  }
+  .peer-table th, .peer-table td {
+    border: 1px solid #e2e8f0;
+    padding: 7px 10px;
+    text-align: left;
+    vertical-align: top;
+  }
+  .peer-table th { background: #edf2f7; font-weight: 600; }
+  .peer-table td.num { text-align: left; }
+
+  .risk { color: #c53030; }
+  .meta-line { font-size: 13.5px; text-align: left; }
+  .link a { color: var(--blue); text-decoration: none; border-bottom: 1px solid #bee3f8; }
+  .link a:hover { border-bottom-color: var(--blue); }
+
+  /* Vote */
+  .vote-how {
+    background: #fffbeb;
+    border: 1px solid #f6e05e;
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 16px;
+    font-size: 13px;
+    text-align: left;
+    color: #744210;
+  }
+  .vote-bar {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin: 10px 0 4px;
+    flex-wrap: wrap;
+  }
+  .vote-btn {
+    border: 1px solid var(--border);
+    background: #fff;
+    border-radius: 999px;
+    padding: 12px 18px;
+    min-height: 44px;
+    min-width: 110px;
+    font-size: 15px;
+    cursor: pointer;
+    font-family: inherit;
+    color: var(--navy);
+    transition: background 0.15s, border-color 0.15s, transform 0.1s;
+    -webkit-tap-highlight-color: rgba(0,0,0,0.08);
+    touch-action: manipulation;
+    user-select: none;
+    -webkit-user-select: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+  }
+  .vote-btn:hover { background: #edf2f7; }
+  .vote-btn:active { transform: scale(0.97); background: #e2e8f0; }
+  .vote-btn:disabled { opacity: 0.55; cursor: wait; pointer-events: none; }
+  .vote-btn.done-bull {
+    background: #c6f6d5;
+    border-color: #68d391;
+    color: #276749;
+    font-weight: 700;
+  }
+  .vote-btn.done-bear {
+    background: #fed7d7;
+    border-color: #fc8181;
+    color: #c53030;
+    font-weight: 700;
+  }
+  .vote-stats {
+    font-size: 13px;
+    color: var(--gray);
+    margin-left: 4px;
+  }
+  .vote-stats b.bull { color: #276749; }
+  .vote-stats b.bear { color: #c53030; }
+
+  /* Other list numbered */
+  .other-list { margin-top: 8px; }
+  .other-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 11px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 13.5px;
+    text-align: left;
+  }
+  .other-item:last-child { border-bottom: none; }
+  .other-item .num {
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #edf2f7;
+    color: var(--navy);
+    font-weight: 700;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .other-item .body { flex: 1; }
+  .other-item .cname { font-weight: 700; color: var(--navy); }
+  .other-item .cinfo { color: var(--gray); font-size: 12.5px; margin-top: 2px; }
+  .other-item .cinfo a { color: var(--blue); }
+
+  .footer {
+    text-align: center;
+    font-size: 12px;
+    color: #718096;
+    margin-top: 28px;
+    padding-top: 14px;
+    border-top: 1px solid var(--border);
+  }
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="brand">輝立證券新股部</div>
+  <div class="meta">過聆訊後新股推薦 · 2026年10月13日</div>
+</div>
+
+<div class="wrap">
+
+  <div class="hero" id="overview">
+    <h1>過聆訊後新股推薦</h1>
+    <div class="sub">精選三家 · 單家聚焦 · 含同行對比 ｜ 數據來源：港交所聆訊後資料集</div>
+    <div class="hero-cards">
+      <a class="hero-card" href="#ds">
+        <div class="stars">★★★★★</div>
+        <div class="name">① 東山精密</div>
+        <div class="tag">A+H · PCB / 光模塊 / AI</div>
+        <div class="fund">預計集資 <b>約150–234億港元</b></div>
+        <div class="hint">點擊查看詳情 ↓</div>
+      </a>
+      <a class="hero-card" href="#tc">
+        <div class="stars">★★★★★</div>
+        <div class="name">② 天賜材料</div>
+        <div class="tag">A+H · 電解液龍頭</div>
+        <div class="fund">預計集資 <b>約55億</b></div>
+        <div class="hint">點擊查看詳情 ↓</div>
+      </a>
+      <a class="hero-card" href="#xm">
+        <div class="stars">★★★★☆</div>
+        <div class="name">③ 希磁科技</div>
+        <div class="tag">H · 磁性傳感器 IDM</div>
+        <div class="fund">預計集資 <b>約15億</b></div>
+        <div class="hint">點擊查看詳情 ↓</div>
+      </a>
+    </div>
+  </div>
+
+  <div class="vote-how">
+    <b>全組投票：</b>撳 <b>🐮🐻 去投票</b> 填表；撳 <b>📊 睇總票</b> 睇結果。<br>
+    微信若打唔開，請用右上角 <b>··· → 在瀏覽器打開</b>。
+  </div>
+
+  <!-- 東山精密 -->
+  <div class="section" id="ds">
+    <h2>
+      ① 東山精密
+      <span class="badge green">★★★★★</span>
+      <span class="badge">A+H · 002384.SZ</span>
+    </h2>
+    <p class="one-liner">全球 PCB 第三 + 光模塊第七 · AI 算力硬件成長股 · 集資規模最大</p>
+    <div class="vote-bar" data-key="dongshan">
+      <a class="vote-btn" href="https://docs.google.com/forms/d/e/1FAIpQLSdmJvCxiYtM_vwZ9tY1ahllLcgQPZj5uP59xQcmhJwfHWuukg/viewform" target="_blank" rel="noopener noreferrer" style="text-decoration:none;">🐮🐻 去投票</a>
+      <a class="vote-btn" href="https://docs.google.com/spreadsheets/d/e/2PACX-1vRyoVQNU2JPhx6nxoRrExNzto8QYlnHNlddu1YyA1g5XZVvFZQc4aqsXMIipNe_n_g0aqbssSsBV-mu/pubchart?oid=238093008&amp;format=interactive" target="_blank" rel="noopener noreferrer" style="text-decoration:none;background:#ebf8ff;border-color:#90cdf4;">📊 睇總票</a>
+      <span class="vote-stats" id="stats-dongshan" style="font-size:12px;color:#718096;">以 Google 表單／試算表為準</span>
+    </div>
+    <div class="kpi-row">
+      <div class="kpi"><div class="label">2025 收入</div><div class="val">401 億</div></div>
+      <div class="kpi"><div class="label">2026H1 收入</div><div class="val up">278 億 (+64%)</div></div>
+      <div class="kpi"><div class="label">2026H1 淨利</div><div class="val up">29.8 億 (+293%)</div></div>
+      <div class="kpi"><div class="label">預計集資</div><div class="val">150–234 億港元</div></div>
+    </div>
+
+    <h3>市場地位</h3>
+    <ul class="clean">
+      <li><b>全球 PCB 第三</b>（2025 份額 4.2%）</li>
+      <li><b>邊緣 AI 設備 PCB 全球第一</b>（26.9%）、軟板全球第二（24.5%）</li>
+      <li>透過索爾思光電：<b>全球光模塊第七</b>（2.9%）</li>
+      <li>客戶覆蓋全球前五大消費電子 / 電動車 / 雲服務廠商</li>
+    </ul>
+
+    <h3>核心優勢</h3>
+    <ul class="clean">
+      <li><b>AI PCB + 光模塊雙引擎</b>，2026H1 光模塊收入 53.5 億、毛利率約 39%</li>
+      <li>2026H1 淨利近 <b>30 億</b>，同比暴增約 3 倍</li>
+      <li>海外收入佔比高（2026H1 內地以外約 83%）</li>
+      <li>H 股有助國際化與估值重塑</li>
+    </ul>
+
+    <h3>主要風險</h3>
+    <ul class="clean">
+      <li class="risk">客戶集中度偏高（前五大約 54–64%）</li>
+      <li class="risk">債務比率約 64%</li>
+      <li class="risk">光模塊並表時間尚短；消費電子週期波動</li>
+    </ul>
+
+    <h3>保薦人 · 聆訊後資料集</h3>
+    <p class="meta-line">瑞銀、海通國際、廣發證券、中信證券</p>
+    <p class="link meta-line" style="margin-top:4px;">
+      <a href="https://www1.hkexnews.hk/app/sehk/2026/108550/documents/sehk26101100053_c.pdf" target="_blank">聆訊後資料集 sehk26101100053_c.pdf</a>
+    </p>
+
+    <div class="peer-box">
+      <h4>同行對比：建滔積層板（1888.HK）</h4>
+      <p>建滔積層板為全球領先覆銅面板（CCL）製造商，同屬 AI / PCB 上游供應鏈，可作為估值與景氣參考。</p>
+      <table class="peer-table">
+        <tr><th>指標</th><th>東山精密（IPO 標的）</th><th>建滔積層板 1888.HK</th></tr>
+        <tr><td>主業</td><td>PCB + 光模塊 + 精密組件</td><td>覆銅面板（CCL）及上游</td></tr>
+        <tr><td>2025 收入</td><td class="num">約 401 億人民幣</td><td class="num">約 204 億港元</td></tr>
+        <tr><td>2025 淨利</td><td class="num">約 13.9 億人民幣</td><td class="num">約 24.4 億港元</td></tr>
+        <tr><td>2026H1 淨利增速</td><td class="num"><b>+293%</b></td><td class="num"><b>+209%</b></td></tr>
+        <tr><td>AI 相關</td><td>AI PCB + 光模塊直接受益</td><td>高頻高速 CCL 受益 AI 數據中心</td></tr>
+        <tr><td>市值參考（約）</td><td>A 股約 2500+ 億人民幣</td><td>約 1470 億港元</td></tr>
+        <tr><td>啟示</td><td colspan="2">兩者均處 AI 硬件景氣上行；東山精密具備「PCB + 光模塊」一體化，成長彈性或更高；建滔積層板可作估值錨。</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- 天賜材料 -->
+  <div class="section" id="tc">
+    <h2>
+      ② 天賜材料
+      <span class="badge green">★★★★★</span>
+      <span class="badge">A+H · 002709.SZ</span>
+    </h2>
+    <p class="one-liner">全球電解液絕對龍頭 · 業績強修復 · 打新優先級最高之一</p>
+    <div class="vote-bar" data-key="tinci">
+      <a class="vote-btn" href="https://docs.google.com/forms/d/e/1FAIpQLSdmJvCxiYtM_vwZ9tY1ahllLcgQPZj5uP59xQcmhJwfHWuukg/viewform" target="_blank" rel="noopener noreferrer" style="text-decoration:none;">🐮🐻 去投票</a>
+      <a class="vote-btn" href="https://docs.google.com/spreadsheets/d/e/2PACX-1vRyoVQNU2JPhx6nxoRrExNzto8QYlnHNlddu1YyA1g5XZVvFZQc4aqsXMIipNe_n_g0aqbssSsBV-mu/pubchart?oid=1762399037&amp;format=interactive" target="_blank" rel="noopener noreferrer" style="text-decoration:none;background:#ebf8ff;border-color:#90cdf4;">📊 睇總票</a>
+      <span class="vote-stats" id="stats-tinci" style="font-size:12px;color:#718096;">以 Google 表單／試算表為準</span>
+    </div>
+    <div class="kpi-row">
+      <div class="kpi"><div class="label">2025 收入</div><div class="val">約 167 億</div></div>
+      <div class="kpi"><div class="label">2026H1 收入</div><div class="val up">147 億 (+109%)</div></div>
+      <div class="kpi"><div class="label">2026H1 淨利</div><div class="val up">28.6 億 (+968%)</div></div>
+      <div class="kpi"><div class="label">預計集資</div><div class="val">約 55 億</div></div>
+    </div>
+
+    <h3>市場地位</h3>
+    <ul class="clean">
+      <li><b>全球電解液連續約 10 年出貨量第一</b>，2025 份額約 <b>36%</b></li>
+      <li>全球最大六氟磷酸鋰及 LiFSI 供應商之一</li>
+      <li>垂直一體化（溶質 + 添加劑 + 電解液）成本優勢明顯</li>
+    </ul>
+
+    <h3>核心優勢</h3>
+    <ul class="clean">
+      <li><b>2026 業績 V 型反轉最強</b>：H1 淨利同比近 10 倍</li>
+      <li>全球化布局：募資約 80% 投海外（摩洛哥、美國等）</li>
+      <li>固態電解質等新技術儲備</li>
+      <li>A+H 後流動性與國際投資者覆蓋提升</li>
+    </ul>
+
+    <h3>主要風險</h3>
+    <ul class="clean">
+      <li class="risk">鋰電行業<strong>強週期性</strong></li>
+      <li class="risk">A 股 2026 年迄今跌幅約 <b>32%</b></li>
+      <li class="risk">受原材料與下游庫存波動影響</li>
+    </ul>
+
+    <h3>保薦人 · 聆訊後資料集</h3>
+    <p class="meta-line">摩根大通、中信證券、廣發證券</p>
+    <p class="link meta-line" style="margin-top:4px;">
+      <a href="https://www1.hkexnews.hk/app/sehk/2026/108340/documents/sehk26100500007_c.pdf" target="_blank">聆訊後資料集 sehk26100500007_c.pdf</a>
+    </p>
+
+    <div class="peer-box blue">
+      <h4>同行對比：新宙邦（300037.SZ）</h4>
+      <p>新宙邦為電解液行業「雙雄」之一，海外客戶綁定較深，可作份額與盈利對照。</p>
+      <table class="peer-table">
+        <tr><th>指標</th><th>天賜材料（IPO 標的）</th><th>新宙邦 300037.SZ</th></tr>
+        <tr><td>全球電解液份額（約）</td><td class="num"><b>約 32–36%（第一）</b></td><td class="num">約 13%（第三）</td></tr>
+        <tr><td>2026H1 淨利增速</td><td class="num"><b>+968%</b></td><td class="num">約 +100% 量級</td></tr>
+        <tr><td>模式特點</td><td>高度垂直一體化（6F / LiFSI / 添加劑）</td><td>技術與海外客戶綁定較強</td></tr>
+        <tr><td>海外布局</td><td>摩洛哥、美國（霍尼韋爾合資）等</td><td>波蘭等已投產 / 擴建</td></tr>
+        <tr><td>啟示</td><td colspan="2">天賜份額與一體化成本優勢領先；新宙邦海外與客戶結構可作互補參考。</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- 希磁科技 -->
+  <div class="section" id="xm">
+    <h2>
+      ③ 希磁科技
+      <span class="badge blue">★★★★☆</span>
+      <span class="badge">H · 磁性傳感器 IDM</span>
+    </h2>
+    <p class="one-liner">已跑通商業模式的成長股 · 中國磁性傳感器第一 · H 股</p>
+    <div class="vote-bar" data-key="sinomags">
+      <a class="vote-btn" href="https://docs.google.com/forms/d/e/1FAIpQLSdmJvCxiYtM_vwZ9tY1ahllLcgQPZj5uP59xQcmhJwfHWuukg/viewform" target="_blank" rel="noopener noreferrer" style="text-decoration:none;">🐮🐻 去投票</a>
+      <a class="vote-btn" href="https://docs.google.com/spreadsheets/d/e/2PACX-1vRyoVQNU2JPhx6nxoRrExNzto8QYlnHNlddu1YyA1g5XZVvFZQc4aqsXMIipNe_n_g0aqbssSsBV-mu/pubchart?oid=1558266859&amp;format=interactive" target="_blank" rel="noopener noreferrer" style="text-decoration:none;background:#ebf8ff;border-color:#90cdf4;">📊 睇總票</a>
+      <span class="vote-stats" id="stats-sinomags" style="font-size:12px;color:#718096;">以 Google 表單／試算表為準</span>
+    </div>
+    <div class="kpi-row">
+      <div class="kpi"><div class="label">2025 收入</div><div class="val">8.45 億</div></div>
+      <div class="kpi"><div class="label">2026前5月收入</div><div class="val up">4.19 億 (+19%)</div></div>
+      <div class="kpi"><div class="label">2026前5月淨利</div><div class="val up">4793 萬 (+169%)</div></div>
+      <div class="kpi"><div class="label">預計集資</div><div class="val">約 15 億</div></div>
+    </div>
+
+    <h3>市場地位</h3>
+    <ul class="clean">
+      <li><b>中國磁性傳感器第 1</b>；全球磁性傳感器第 10（0.6%）</li>
+      <li>全球 xMR 第 5（1.6%）；電流傳感器全球第 4（3.3%）</li>
+      <li>少數擁有 Hall + xMR（尤其 TMR）並實現 <b>IDM 垂直整合</b> 的公司</li>
+    </ul>
+
+    <h3>核心優勢</h3>
+    <ul class="clean">
+      <li><b>已扭虧並盈利</b>，利潤增速遠快於收入；經營現金流轉正</li>
+      <li>IDM 模式壁壘較高</li>
+      <li>直接受益新能源車 / 機器人 / AI 基建</li>
+      <li>2025 年向新能源車客戶交付約 <b>1.3 億顆</b>運動傳感器芯片</li>
+    </ul>
+
+    <h3>主要風險</h3>
+    <ul class="clean">
+      <li class="risk">行業極度分散（前十大合計僅約 31.8%）</li>
+      <li class="risk">關聯交易近年上升</li>
+      <li class="risk">收入高度依賴電流傳感器（>80%）；海外收入佔比不高</li>
+    </ul>
+
+    <h3>保薦人 · 聆訊後資料集</h3>
+    <p class="meta-line">中信建投國際</p>
+    <p class="link meta-line" style="margin-top:4px;">
+      <a href="https://www1.hkexnews.hk/app/sehk/2026/108258/documents/sehk26092802069_c.pdf" target="_blank">聆訊後資料集 sehk26092802069_c.pdf</a>
+    </p>
+
+    <div class="peer-box">
+      <h4>同行對比說明（磁性傳感器）</h4>
+      <p>全球磁性傳感器高度分散，頭部多為海外 IDM（Allegro、英飛凌、TDK 等）。港股缺乏直接對標；國內可參考納芯微等作情緒參考，業務並非完全同質。</p>
+      <table class="peer-table">
+        <tr><th>維度</th><th>希磁科技</th><th>行業特點（參考）</th></tr>
+        <tr><td>模式</td><td><b>IDM</b>（設計→晶圓→模組）</td><td>全球前十約半數 IDM、半數 Fabless</td></tr>
+        <tr><td>中國地位</td><td class="num"><b>第 1</b></td><td>其餘中國廠商多數未進全球前十</td></tr>
+        <tr><td>全球份額</td><td class="num">約 0.6%</td><td>前十合計約 32%，極分散</td></tr>
+        <tr><td>盈利階段</td><td>已扭虧，2026 前 5 月淨利已接近 2025 全年</td><td>早期平台型公司仍多處投入期</td></tr>
+        <tr><td>啟示</td><td colspan="2">適合看好國產替代與新能源 / 機器人傳感器長期需求、且能接受行業分散與規模仍小的投資者。</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- Other list - numbered by date desc -->
+  <div class="section" id="others">
+    <h2>其他過聆訊公司（簡表）</h2>
+    <p style="font-size:12.5px;color:var(--gray);margin-bottom:10px;text-align:left;">按聆訊後資料集最新發佈日期由新到舊排列。未列入前三推薦，僅列架構、行業、集資/保薦人與資料集連結。</p>
+    <div class="other-list">
+
+      <div class="other-item">
+        <div class="num">1</div>
+        <div class="body">
+          <div class="cname">微億智造（09/10/2026）</div>
+          <div class="cinfo">H · 工業具身智能機器人 · 集資約 30 億 · 保薦人：東方證券國際 · <a href="https://www1.hkexnews.hk/app/sehk/2026/108374/documents/sehk26100901431_c.pdf" target="_blank">聆訊後資料集</a></div>
+        </div>
+      </div>
+
+      <div class="other-item">
+        <div class="num">2</div>
+        <div class="body">
+          <div class="cname">瘦西湖文旅（07/10/2026）</div>
+          <div class="cinfo">H · 水上游覽 / 文旅 · 保薦人：光大證券國際 · <a href="https://www1.hkexnews.hk/app/sehk/2026/108373/documents/sehk26100700089.pdf" target="_blank">聆訊後資料集</a></div>
+        </div>
+      </div>
+
+      <div class="other-item">
+        <div class="num">3</div>
+        <div class="body">
+          <div class="cname">一微科技（30/09/2026）</div>
+          <div class="cinfo">H · 18C · 智能移動機器人解決方案 · 保薦人：中信建投國際、國泰君安 · <a href="https://www1.hkexnews.hk/app/sehk/2026/108911/documents/sehk26093003029_c.pdf" target="_blank">聆訊後資料集</a></div>
+        </div>
+      </div>
+
+      <div class="other-item">
+        <div class="num">4</div>
+        <div class="body">
+          <div class="cname">湖南軍信環保（13/09/2026）</div>
+          <div class="cinfo">A+H（301109.SZ）· 環保公用 / 垃圾焚燒 · 保薦人：中金、中信 · <a href="https://www1.hkexnews.hk/app/appindex.html?lang=zh" target="_blank">披露易入口</a></div>
+        </div>
+      </div>
+
+      <div class="other-item">
+        <div class="num">5</div>
+        <div class="body">
+          <div class="cname">濤濤車業（07/09/2026）</div>
+          <div class="cinfo">A+H（301345.SZ）· 電動低速車 / 出口 · 集資約 19.5 億 · 保薦人：中信里昂(CLSA) · <a href="https://www1.hkexnews.hk/app/sehk/2026/108575/documents/sehk26090701489_c.pdf" target="_blank">聆訊後資料集</a></div>
+        </div>
+      </div>
+
+      <div class="other-item">
+        <div class="num">6</div>
+        <div class="body">
+          <div class="cname">深圳四方精創（06/09/2026）</div>
+          <div class="cinfo">H · 金融科技 / IT · <a href="https://www1.hkexnews.hk/app/appindex.html?lang=zh" target="_blank">披露易入口</a></div>
+        </div>
+      </div>
+
+      <div class="other-item">
+        <div class="num">7</div>
+        <div class="body">
+          <div class="cname">哥瑞利軟件（07/08/2026）</div>
+          <div class="cinfo">H · 18C · 半導體 IMSS 軟件 · 集資約 10 億 · 保薦人：國泰君安國際、民銀資本 · <a href="https://www1.hkexnews.hk/app/sehk/2026/108262/documents/sehk26062301713_c.pdf" target="_blank">聆訊後資料集</a></div>
+        </div>
+      </div>
+
+      <div class="other-item">
+        <div class="num">8</div>
+        <div class="body">
+          <div class="cname">永康控股（26/06/2026）</div>
+          <div class="cinfo">H · 集裝箱堆場 / 物流（新加坡）· 注：其後曾撤回發售，以披露易最新狀態為準 · <a href="https://www1.hkexnews.hk/app/appindex.html?lang=zh" target="_blank">披露易入口</a></div>
+        </div>
+      </div>
+
+      <div class="other-item">
+        <div class="num">9</div>
+        <div class="body">
+          <div class="cname">坦博爾（21/06/2026）</div>
+          <div class="cinfo">H · 戶外服飾 · 保薦人：中金 · <a href="https://www1.hkexnews.hk/app/appindex.html?lang=zh" target="_blank">披露易入口</a></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="section" id="vote-setup">
+    <h2>投票說明</h2>
+    <p style="font-size:13.5px;text-align:left;line-height:1.7;color:#4a5568;">
+      投票經 Google 表單收集，結果自動寫入共用試算表，全組可見。<br>
+      WhatsApp／郵件可直接開本頁；微信用戶請改用系統瀏覽器打開。
+    </p>
+  </div>
+
+  <div class="section">
+    <h2>打新建議（精簡）</h2>
+    <ul class="clean">
+      <li><b>★★★★★ 東山精密、天賜材料</b>：基本面紮實、業績兌現強，集資規模與流動性預期較好，優先級最高。</li>
+      <li><b>★★★★☆ 希磁科技</b>：H 股、已盈利、中國磁傳感器第一，適合作為成長配置；規模與流動性弱於前兩者。</li>
+    </ul>
+    <p style="margin-top:12px;font-size:12.5px;color:var(--gray);text-align:left;">注：僅供參考，不構成投資建議。港股打新存在破發風險。投票以 Google 表單為準；微信請用系統瀏覽器打開。僅供參考，不構成投資建議。</p>
+  </div>
+
+  <div class="footer">
+    輝立證券新股部 ｜ 數據來源：港交所聆訊後資料集 ｜ 2026年10月13日<br>
+    免責聲明：僅供參考，不構成投資建議。
+  </div>
+</div>
+
+<!-- GoatCounter -->
+<script data-goatcounter="https://phillip-ipo.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>
